@@ -1,0 +1,29 @@
+name: test and create Docker image
+on: workflow_dispatch
+
+jobs:
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: checkout code
+              uses: actions/checkout@v3
+            - name: Cache Dependencies
+              id: npm-dependency-cache
+              uses: actions/cache@v4
+              with: 
+                path: node_modules
+                key: npm-dep-cach-${{ hashFiles('**/package-lock.json') }}
+            - name: Install Dependencies
+              if: steps.npm-dependency-cache.outputs.cache-hit != 'true'
+              run: npm ci
+            - name: test
+              id: test-step
+              run: npm test
+            - name: Generate test report
+              if: failure() && steps.test-step.outcome == 'failure'
+              uses: actions/upload-artifact@v4
+              with:
+                name: test-report
+                path: ./test-report
+
+
