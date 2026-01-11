@@ -12,10 +12,10 @@ jobs:
               uses: actions/cache@v4
               with: 
                 path: node_modules
-                key: npm-dep-cach-${{ hashFiles('**/package**.json') }}
+                key: npm-dep-cach-${{ hashFiles('**/package-lock.json') }}
             - name: Install Dependencies
-              if: steps.npm-dependency-cache.outputs.cache-hit != 'false'
-              run: npm install
+              if: steps.npm-dependency-cache.outputs.cache-hit == 'false'
+              run: npm ci
             - name: test
               id: test-step
               run: npm test
