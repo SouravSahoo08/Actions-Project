@@ -14,7 +14,7 @@ jobs:
                 path: node_modules
                 key: npm-dep-cach-${{ hashFiles('**/package**.json') }}
             - name: Install Dependencies
-              if: steps.npm-dependency-cache.outputs.cache-hit != 'true'
+              if: steps.npm-dependency-cache.outputs.cache-hit != 'false'
               run: npm install
             - name: test
               id: test-step
