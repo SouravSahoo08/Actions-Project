@@ -25,5 +25,15 @@ jobs:
               with:
                 name: test-report
                 path: ./test-report
+    
+    build-docker-image:
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v6
+
+        - run: |
+            docker build -t nodeAppImage .
+            docker images
+
 
 
