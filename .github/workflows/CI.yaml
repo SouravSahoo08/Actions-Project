@@ -49,9 +49,7 @@ jobs:
         - name: Upload result to GitHub Code Scanning
           uses: github/codeql-action/upload-sarif@v4
           with:
-            sarif_file: |
-              /github/workspace/snyk-code.sarif
-              /github/workspace/snyk-open-source.sarif
+            sarif_file: snyk-code.sarif
     
     Dockerize_and_push:
       needs: SAST
