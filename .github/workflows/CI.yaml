@@ -38,18 +38,31 @@ jobs:
 
         - uses: snyk/actions/setup@master
 
-        - name: Run Snyk to check for vulnerabilities
-          continue-on-error: true # To make sure that SARIF upload gets called
+        - name: Snyk Code Scan
+          continue-on-error: true 
           run: |
             snyk code test --sarif-file-output=snyk-code.sarif
+          env:
+            SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        
+        - name: Snyk Open source Scan
+          continue-on-error: true 
+          run: |
             snyk test --sarif-file-output=snyk-open-source.sarif            
           env:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           
-        - name: Upload result to GitHub Code Scanning
+        - name: Upload Snyk Code result to GitHub Code Scanning
+          continue-on-error: true
           uses: github/codeql-action/upload-sarif@v4
           with:
             sarif_file: snyk-code.sarif
+        
+        - name: Upload Snyk Open Source result to GitHub Code Scanning
+          continue-on-error: true
+          uses: github/codeql-action/upload-sarif@v4
+          with:
+            sarif_file: snyk-open-source.sarif
     
     Dockerize_and_push:
       needs: SAST
@@ -81,7 +94,7 @@ jobs:
         - name: Run Snyk to check Docker image for vulnerabilities
           continue-on-error: true
           run: |
-            snyk container test $ECR_REGISTRY/$ECR_REPOSITORY:latest \ 
+            snyk container test ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest \ 
             --file=Dockerfile \
             --sarif-file-output=snyk-container.sarif
           env:
