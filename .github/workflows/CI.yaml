@@ -94,9 +94,7 @@ jobs:
         - name: Run Snyk to check Docker image for vulnerabilities
           continue-on-error: true
           run: |
-            snyk container test ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest \ 
-            --file=Dockerfile \
-            --sarif-file-output=snyk-container.sarif
+            snyk container test ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest --file=Dockerfile --sarif-file-output=snyk-container.sarif
           env:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
                   
