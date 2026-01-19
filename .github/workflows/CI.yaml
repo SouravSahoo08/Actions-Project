@@ -1,6 +1,10 @@
 name: Test and Dockerize
 on: workflow_dispatch
 
+permissions:
+  contents: read
+  security-events: write
+
 jobs:
     test:
         runs-on: ubuntu-latest
