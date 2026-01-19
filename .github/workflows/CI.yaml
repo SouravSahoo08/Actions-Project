@@ -41,8 +41,8 @@ jobs:
         - name: Run Snyk to check for vulnerabilities
           continue-on-error: true # To make sure that SARIF upload gets called
           run: |
-            snyk code test --sarif > snyk-code.sarif
-            snyk test --sarif > snyk-open-source.sarif            
+            snyk code test --sarif-file-output=snyk-code.sarif
+            snyk test --sarif-file-output=snyk-open-source.sarif            
           env:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           
