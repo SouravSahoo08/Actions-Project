@@ -39,6 +39,7 @@ jobs:
         - uses: snyk/actions/setup@master
 
         - name: Snyk Code Scan
+          id: snyk-code-scan
           continue-on-error: true 
           run: |
             snyk code test --sarif-file-output=snyk-code.sarif
@@ -46,6 +47,7 @@ jobs:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
         
         - name: Snyk Open source Scan
+          id: snyk-osrc-scan
           continue-on-error: true 
           run: |
             snyk test --sarif-file-output=snyk-open-source.sarif            
@@ -53,16 +55,20 @@ jobs:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           
         - name: Upload Snyk Code result to GitHub Code Scanning
-          continue-on-error: true
           uses: github/codeql-action/upload-sarif@v4
           with:
             sarif_file: snyk-code.sarif
         
         - name: Upload Snyk Open Source result to GitHub Code Scanning
-          continue-on-error: true
           uses: github/codeql-action/upload-sarif@v4
           with:
             sarif_file: snyk-open-source.sarif
+
+        # - name: Fail build on vulnerabilites
+        #   if: steps.snyk-code-scan.outcome == 'failure' || steps.snyk-osrc-scan.outcome == 'failure'
+        #   run: |
+        #     echo "Vulnerabilities found, Failing build"
+        #     exit 1
     
     Dockerize_and_push:
       needs: SAST
@@ -81,29 +87,30 @@ jobs:
           id: login-ecr
           uses: aws-actions/amazon-ecr-login@v2
 
+        - name: Export ECR values
+          run: |
+            echo "ECR_REGISTRY=${{ steps.login-ecr.outputs.registry }}" >> $GITHUB_ENV
+            echo "ECR_REPOSITORY=${{ secrets.ECR_REPOSITORY }}" >> $GITHUB_ENV
+
         - name: Build image
-          env:
-            ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-            ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }}
           run: |
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
-          # docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
-
+          
         - uses: snyk/actions/setup@master
 
         - name: Run Snyk to check Docker image for vulnerabilities
+          id: snyk-container-scan
           continue-on-error: true
           run: |
-            snyk container test ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY }}:latest --file=Dockerfile --sarif-file-output=snyk-container.sarif
+            snyk container test $ECR_REGISTRY/$ECR_REPOSITORY:latest --file=Dockerfile --sarif-file-output=snyk-container.sarif
           env:
             SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
                   
         - name: Upload result to GitHub Code Scanning
-          continue-on-error: true
           uses: github/codeql-action/upload-sarif@v4
           with:
             sarif_file: snyk-container.sarif  
 
-
-
-
+        - name: Push Docker image
+          if: steps.snyk-container-scan.outcome != 'failure'
+          run: docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
