@@ -1,11 +1,19 @@
-from node:lts-alpine3.23
+FROM node:lts-alpine3.23 AS builder
 
-workdir /app
+WORKDIR /app
 
-copy package*.json .
+COPY package*.json .
 
-run npm ci && npm cache clean --force
+RUN npm ci && npm cache clean --force
 
-copy . .
+COPY . .
+RUN npm run build
 
-cmd ["npm", "run", "dev"]
+
+FROM nginx:alpine
+
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

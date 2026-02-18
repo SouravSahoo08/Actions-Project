@@ -20,7 +20,7 @@ resource "aws_lb" "alb" {
   name = "ecs-alb"
   load_balancer_type = "application"
   subnets = var.public_subnets
-  security_groups = [ aws_security_group.alb_sg ]
+  security_groups = [aws_security_group.alb_sg.id]
 }
 
 resource "aws_lb_target_group" "alb_tg" {

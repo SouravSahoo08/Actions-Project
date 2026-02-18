@@ -3,10 +3,10 @@ output "alb_id" {
 }
 
 output "alb_sg" {
-  value = alb_sg.id
+  value = aws_security_group.alb_sg.id
 }
 
-output "name" {
-  value = aws_lb_target_group.alb_tg.id
+output "alb_target_group_arn" {
+  value = aws_lb_target_group.alb_tg.arn
 }
 

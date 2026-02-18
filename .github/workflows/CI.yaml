@@ -95,6 +95,7 @@ jobs:
         - name: Build image
           run: |
             docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:latest .
+            docker tag $ECR_REGISTRY/$ECR_REPOSITORY:latest $ECR_REGISTRY/$ECR_REPOSITORY:v1
           
         - uses: snyk/actions/setup@master
 
@@ -113,4 +114,6 @@ jobs:
 
         - name: Push Docker image
           if: steps.snyk-container-scan.outcome != 'failure'
-          run: docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          run: |
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+            docker push $ECR_REGISTRY/$ECR_REPOSITORY:v1
