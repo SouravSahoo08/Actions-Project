@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 jobs:
-  tf_plan:
+  tf_destroy:
     runs-on: ubuntu-latest
     defaults:
       run:
