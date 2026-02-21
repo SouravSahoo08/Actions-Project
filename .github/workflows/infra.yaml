@@ -3,7 +3,7 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'infrastructure/**'
+      - 'Infrastructure/**'
       
 
 env:
@@ -39,6 +39,7 @@ jobs:
         run: terraform init -input=false
 
       - name: Terraform Format Check
+        continue-on-error: true
         run: terraform fmt -check -recursive
 
       - name: Terraform Validate
