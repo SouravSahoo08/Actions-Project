@@ -5,12 +5,12 @@ terraform {
       version = "~> 5.0"
     }
   }
-  # backend "s3" {
-  #   bucket = "value"
-  #   key = "value"
-  #   region = "us_east-1"
-  #   dynamodb_table = "value"
-  # }
+  backend "s3" {
+    bucket = "actions-tf-state-bucket "
+    key = "ecs-project/terraform.tfstate"
+    region = "us_east-1"
+    dynamodb_table = "terraform-state-lock-table"
+  }
 }
 
 provider "aws" {
