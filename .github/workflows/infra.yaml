@@ -3,12 +3,12 @@ on:
   workflow_dispatch:
   push:
     paths:
-      - 'Infrastructure/**'
+      - 'infrastructure/**'
       
 
 env:
   TF_VERSION: '1.7.0'
-  WORKING_DIR: './infrastructure'
+  WORKING_DIR: 'infrastructure'
 
 permissions:
   contents: read
