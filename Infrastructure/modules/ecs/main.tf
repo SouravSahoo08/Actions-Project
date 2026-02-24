@@ -3,34 +3,38 @@ resource "aws_ecs_cluster" "ecs_cluster" {
 }
 
 resource "aws_cloudwatch_log_group" "logs" {
-  name = "/ecs/app"
+  name = "/ecs/dev-app"
 }
 
 resource "aws_security_group" "ecs_sg" {
   vpc_id = var.vpc_id
 
   ingress {
-    from_port = 80
-    to_port = 80
-    protocol = "tcp"
+    from_port       = 80
+    to_port         = 80
+    protocol        = "tcp"
     security_groups = var.alb_sg
   }
 
   egress {
-    from_port = 0
-    to_port = 0
-    protocol = "-1"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "dev-ecs_sg"
   }
 }
 
 resource "aws_ecs_task_definition" "task" {
   family                   = "app"
   requires_compatibilities = ["FARGATE"]
-  cpu    = var.cpu
-  memory = var.memory
-  network_mode = "awsvpc"
-  execution_role_arn = var.iam_task_execution_role
+  cpu                      = var.cpu
+  memory                   = var.memory
+  network_mode             = "awsvpc"
+  execution_role_arn       = var.iam_task_execution_role
 
   container_definitions = jsonencode([{
     name  = "app"
@@ -41,8 +45,8 @@ resource "aws_ecs_task_definition" "task" {
     logConfiguration = {
       logDriver = "awslogs"
       options = {
-        awslogs-group = aws_cloudwatch_log_group.logs.name
-        awslogs-region = "us-east-1"
+        awslogs-group         = aws_cloudwatch_log_group.logs.name
+        awslogs-region        = "us-east-1"
         awslogs-stream-prefix = "ecs"
       }
     }
