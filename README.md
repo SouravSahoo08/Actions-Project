@@ -110,6 +110,9 @@ Open http://localhost:8080
 
 ## GitHub Actions Workflows
 
+### Note
+Configured with remote statefile stored at S3 and state lock using Dynamo DB.
+
 ### 1) `Test and Dockerize` (`.github/workflows/CI.yaml`)
 
 Trigger:
