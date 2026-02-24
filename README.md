@@ -176,9 +176,3 @@ Required GitHub repository secrets:
 - Backend is configured as S3 + DynamoDB locking.
 - Modules are split into `vpc`, `alb`, `ecs`, and `iam`.
 - `terraform.tfvars` includes example values for CIDRs, ECS sizing, image URI, and container port.
-
-## Important Path-Case Note
-
-Current workflow files reference `Infrastructure` (capital `I`) while the folder in this repository is `infrastructure` (lowercase `i`).
-
-On case-sensitive runners (Linux), this can break workflow execution unless paths are aligned. Consider updating workflow `WORKING_DIR` and `paths` entries to `infrastructure`.
